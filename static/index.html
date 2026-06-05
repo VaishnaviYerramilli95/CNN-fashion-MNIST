@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion MNIST CNN Classifier | Interactive AI Dashboard</title>
+    <meta name="description" content="Interactive Fashion MNIST CNN classifier dashboard. Draw, upload, or pick fashion items and watch a Convolutional Neural Network classify them in real-time.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <!-- Background Effects -->
+    <div class="bg-mesh"></div>
+    <div class="floating-orb orb-1"></div>
+    <div class="floating-orb orb-2"></div>
+    <div class="floating-orb orb-3"></div>
+
+    <!-- Navigation -->
+    <header class="navbar">
+        <div class="brand">
+            <i class="fa-solid fa-shirt brand-icon"></i>
+            <h1>Fashion MNIST <span class="gradient-text">CNN</span></h1>
+        </div>
+        <button class="mobile-toggle" aria-label="Toggle navigation">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <nav class="nav-links">
+            <a href="#demo-section" class="nav-link active">Interactive Demo</a>
+            <a href="#architecture-section" class="nav-link">Architecture</a>
+            <a href="#metrics-section" class="nav-link">Training Metrics</a>
+            <a href="https://github.com" target="_blank" class="github-btn"><i class="fa-brands fa-github"></i> GitHub</a>
+        </nav>
+    </header>
+
+    <main class="main-container">
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <!-- Floating Fashion Icons -->
+            <i class="fa-solid fa-shirt floating-icon fi-1"></i>
+            <i class="fa-solid fa-shoe-prints floating-icon fi-2"></i>
+            <i class="fa-solid fa-bag-shopping floating-icon fi-3"></i>
+            <i class="fa-solid fa-vest floating-icon fi-4"></i>
+            <i class="fa-solid fa-socks floating-icon fi-5"></i>
+            <i class="fa-solid fa-hat-cowboy floating-icon fi-6"></i>
+
+            <h2>Neural Network <span class="gradient-text">Fashion Predictor</span></h2>
+            <p>Draw a clothing item, upload an image, or pick a sample from the Fashion MNIST dataset. Our CNN classifies 10 categories of fashion items with over 90% accuracy.</p>
+
+            <div class="hero-stats">
+                <div class="stat-item animate-on-scroll">
+                    <div class="stat-value">90.9%</div>
+                    <div class="stat-label">Test Accuracy</div>
+                </div>
+                <div class="stat-item animate-on-scroll delay-1">
+                    <div class="stat-value">70K</div>
+                    <div class="stat-label">Training Images</div>
+                </div>
+                <div class="stat-item animate-on-scroll delay-2">
+                    <div class="stat-value">10</div>
+                    <div class="stat-label">Fashion Classes</div>
+                </div>
+                <div class="stat-item animate-on-scroll delay-3">
+                    <div class="stat-value">~93K</div>
+                    <div class="stat-label">Parameters</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Demo Section -->
+        <section id="demo-section">
+            <div class="section-header">
+                <div class="section-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> Try It Live</div>
+                <h2>Interactive Demo</h2>
+                <p>Three ways to test the CNN — draw, upload, or pick from the test set.</p>
+            </div>
+
+            <div class="dashboard-grid">
+
+                <!-- Card 1: Drawing Canvas -->
+                <div class="dashboard-card glass-card animate-on-scroll" id="drawing-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-paintbrush card-icon text-cyan"></i>
+                        <h3>Draw a Clothing Item</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-desc">Draw with a white brush on the dark canvas (e.g., shirt, shoe, bag).</p>
+
+                        <div class="canvas-container">
+                            <canvas id="paint-canvas" width="280" height="280"></canvas>
+                        </div>
+
+                        <div class="canvas-controls">
+                            <div class="brush-size-control">
+                                <span class="control-label">Brush Size: <span id="brush-val">15</span>px</span>
+                                <input type="range" id="brush-slider" min="5" max="30" value="15">
+                            </div>
+                            <div class="button-group">
+                                <button id="clear-btn" class="btn btn-secondary"><i class="fa-solid fa-eraser"></i> Clear</button>
+                                <button id="predict-canvas-btn" class="btn btn-primary"><i class="fa-solid fa-brain"></i> Classify</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Image Uploader -->
+                <div class="dashboard-card glass-card animate-on-scroll delay-1" id="upload-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-cloud-arrow-up card-icon text-purple"></i>
+                        <h3>Upload an Image</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-desc">Drag and drop or browse a PNG/JPG clothing photo. Background brightness is auto-detected.</p>
+
+                        <div class="drag-drop-zone" id="drop-zone">
+                            <i class="fa-solid fa-file-image upload-large-icon"></i>
+                            <p class="upload-text">Drag & Drop Image</p>
+                            <p class="upload-or">or</p>
+                            <label for="file-input" class="btn btn-secondary btn-sm">Browse Files</label>
+                            <input type="file" id="file-input" accept="image/*" style="display: none;">
+                        </div>
+
+                        <div id="preview-container" class="preview-container hidden">
+                            <div class="preview-wrapper">
+                                <img id="upload-preview" src="" alt="Upload Preview">
+                                <button id="remove-upload-btn" class="btn-remove" aria-label="Remove image"><i class="fa-solid fa-circle-xmark"></i></button>
+                            </div>
+                            <button id="predict-upload-btn" class="btn btn-primary"><i class="fa-solid fa-brain"></i> Classify Upload</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Dataset Sampler (full width) -->
+                <div class="dashboard-card glass-card col-span-2 animate-on-scroll" id="dataset-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-images card-icon text-indigo"></i>
+                        <h3>Test Dataset Sampler</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-desc">Click any of these 24 real test images from Fashion MNIST to see the CNN's prediction.</p>
+
+                        <div class="samples-grid" id="samples-container">
+                            <div class="loading-spinner">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Loading test samples...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Prediction Results (full width) -->
+                <div class="dashboard-card glass-card col-span-2 highlight-card animate-on-scroll" id="results-card">
+                    <div class="card-header">
+                        <i class="fa-solid fa-square-poll-horizontal card-icon text-green"></i>
+                        <h3>CNN Prediction Output</h3>
+                    </div>
+                    <div class="card-body prediction-body" style="position: relative;">
+
+                        <!-- Loading Overlay -->
+                        <div class="loading-overlay" id="prediction-loading">
+                            <div class="loading-pulse">
+                                <i class="fa-solid fa-brain"></i>
+                                <span>Analyzing image...</span>
+                            </div>
+                        </div>
+
+                        <div class="prediction-view">
+                            <div class="prediction-main">
+                                <div class="input-preview-card">
+                                    <h4>Processed Input</h4>
+                                    <div class="processed-image-box">
+                                        <img id="processed-preview" src="" alt="No Input">
+                                    </div>
+                                    <span class="badge" id="source-badge">No Input</span>
+                                </div>
+
+                                <div class="prediction-winner">
+                                    <h4>Top Prediction</h4>
+                                    <div class="winner-class" id="predicted-class">—</div>
+                                    <div class="winner-score">
+                                        Confidence: <span class="confidence-value" id="predicted-confidence">0.0%</span>
+                                    </div>
+                                    <div class="actual-label-box hidden" id="actual-label-container">
+                                        Actual: <span id="actual-label">—</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="prediction-chart-box">
+                                <h4>Class Probabilities</h4>
+                                <div class="chart-wrapper">
+                                    <canvas id="probabilities-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Architecture Section -->
+        <section id="architecture-section">
+            <div class="section-header animate-on-scroll">
+                <div class="section-badge"><i class="fa-solid fa-microchip"></i> Under the Hood</div>
+                <h2>CNN Model Architecture</h2>
+                <p>A sequential convolutional neural network with ~93K trainable parameters.</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card glass-card col-span-2 animate-on-scroll">
+                    <div class="card-header">
+                        <i class="fa-solid fa-diagram-project card-icon text-cyan"></i>
+                        <h3>Layer Pipeline</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="architecture-flow">
+                            <div class="arch-layer input-layer animate-on-scroll">
+                                <span class="layer-tag tag-input">Input</span>
+                                <div class="layer-title">Input Layer</div>
+                                <div class="layer-desc">28 × 28 × 1 Grayscale Image</div>
+                            </div>
+                            <div class="arch-connector"></div>
+
+                            <div class="arch-layer conv-layer animate-on-scroll delay-1">
+                                <span class="layer-tag tag-conv">Conv2D</span>
+                                <div class="layer-title">Conv2D — 32 filters, 3×3, ReLU</div>
+                                <div class="layer-desc">Extracts low-level features (edges, textures) → 26×26×32</div>
+                            </div>
+                            <div class="arch-connector"></div>
+
+                            <div class="arch-layer pool-layer animate-on-scroll delay-1">
+                                <span class="layer-tag tag-pool">MaxPool</span>
+                                <div class="layer-title">MaxPooling2D — 2×2</div>
+                                <div class="layer-desc">Downsamples spatial dimensions → 13×13×32</div>
+                            </div>
+                            <div class="arch-connector"></div>
+
+                            <div class="arch-layer conv-layer animate-on-scroll delay-2">
+                                <span class="layer-tag tag-conv">Conv2D</span>
+                                <div class="layer-title">Conv2D — 64 filters, 3×3, ReLU</div>
+                                <div class="layer-desc">Extracts complex high-level features → 11×11×64</div>
+                            </div>
+                            <div class="arch-connector"></div>
+
+                            <div class="arch-layer pool-layer animate-on-scroll delay-2">
+                                <span class="layer-tag tag-pool">MaxPool</span>
+                                <div class="layer-title">MaxPooling2D — 2×2</div>
+                                <div class="layer-desc">Further downsampling → 5×5×64</div>
+                            </div>
+                            <div class="arch-connector"></div>
+
+                            <div class="arch-layer dense-layer animate-on-scroll delay-3">
+                                <span class="layer-tag tag-dense">Flatten + Dense</span>
+                                <div class="layer-title">Flatten → Dense (64 units, ReLU)</div>
+                                <div class="layer-desc">Converts feature maps to 1D vector (1600) and learns combinations</div>
+                            </div>
+                            <div class="arch-connector"></div>
+
+                            <div class="arch-layer output-layer animate-on-scroll delay-3">
+                                <span class="layer-tag tag-output">Output</span>
+                                <div class="layer-title">Dense — 10 units, Softmax</div>
+                                <div class="layer-desc">Outputs probability distribution across 10 fashion classes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Training Metrics Section -->
+        <section id="metrics-section">
+            <div class="section-header animate-on-scroll">
+                <div class="section-badge"><i class="fa-solid fa-chart-line"></i> Performance</div>
+                <h2>Training History</h2>
+                <p>Accuracy and loss curves over 10 epochs of training on 60,000 images.</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card glass-card col-span-2 animate-on-scroll">
+                    <div class="card-header">
+                        <i class="fa-solid fa-chart-line card-icon text-purple"></i>
+                        <h3>Epoch-by-Epoch Metrics</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="history-charts-grid">
+                            <div class="history-chart-card">
+                                <h4><i class="fa-solid fa-bullseye"></i> Accuracy</h4>
+                                <div class="metrics-chart-wrapper">
+                                    <canvas id="accuracy-history-chart"></canvas>
+                                </div>
+                            </div>
+                            <div class="history-chart-card">
+                                <h4><i class="fa-solid fa-arrow-trend-down"></i> Loss</h4>
+                                <div class="metrics-chart-wrapper">
+                                    <canvas id="loss-history-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <p>Fashion MNIST CNN Classifier &copy; 2026 &mdash; Made with <i class="fa-solid fa-heart text-pink"></i> and <i class="fa-solid fa-brain text-cyan"></i></p>
+        <p>Deployable on <a href="https://render.com" target="_blank">Render</a> &bull; Powered by TensorFlow + Flask</p>
+    </footer>
+
+    <!-- App Logic -->
+    <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+# Python cache and temporary files
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+.vscode/
+.idea/
+
+# Virtual environment folders
+venv/
+env/
+.env
+
+# Local logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+
