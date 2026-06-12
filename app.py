@@ -105,8 +105,9 @@ def predict():
         print(f"Prediction error: {str(e)}")
         return jsonify({"error": f"Failed to process image: {str(e)}"}), 500
 
+# Load model at startup (works for both gunicorn and direct python run)
+load_keras_model()
+
 if __name__ == '__main__':
-    # Load model once before server starts
-    load_keras_model()
     # Run server locally on port 5000
     app.run(host='0.0.0.0', port=5000, debug=True)
